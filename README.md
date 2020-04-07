@@ -15,3 +15,5 @@ a c library to read csv file
 4. get 2D double array from CSV (specify columns)
 5. get struct array from CSV (specify columns)
 6. set and get error function
+7. add test code files
+8. add documentation
