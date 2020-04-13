@@ -113,4 +113,13 @@ EXPORT int CSV_Print(CSV_DATA *data);
 */
 EXPORT int CSV_PrintHead(CSV_DATA *data);
 
+/*
+ * CSV_PrintTail()
+ * print the last 5 rows of the file
+ * data is the pointer of the used CSV Data Object
+ * Returns 1 if success
+ * Returns 0 if fail
+*/
+EXPORT int CSV_PrintTail(CSV_DATA *data);
+
 #endif // _CSVREADER_H_
