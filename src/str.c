@@ -8,7 +8,7 @@
 /*
  * get the string array of the header names
  */
-char **GET_HeadName(int * clms,const char * str)
+char **GET_HeadName(int * clms,int ** hSize,const char * str)
 {
     int size;
     int shift=0,i,n;
@@ -17,12 +17,20 @@ char **GET_HeadName(int * clms,const char * str)
     {
         * clms=STRCountComma(str) + 1;
     }
+
     size = *clms;
     head=(char **)malloc(sizeof(char*)*size);
     if(head==NULL)
     {
         return NULL;
     }
+
+    * hSize = (int *) calloc(size,sizeof(int));
+    if(hSize==NULL)
+    {
+        return NULL;
+    }
+
     for(i=0;i<size;i++)
     {
         n=STRFirstComma(str+shift);
@@ -31,13 +39,16 @@ char **GET_HeadName(int * clms,const char * str)
         strncpy(head[i],str+shift,n);
         head[i][n]='\0';//null terminate
         shift += (n+1);
+        //set length of the name
+        hSize[0][i]=n+4;
     }
+
     return head;
 
 }
 
 /*
- * get the row of data
+ * get the row clmsof data
  */
 CSV_ROW * GET_Row(const char * str, int ** pty,int ** size, int clms)
 {
@@ -58,7 +69,7 @@ CSV_ROW * GET_Row(const char * str, int ** pty,int ** size, int clms)
             pty[0][i]=TYPE_AUTO;
         }
     }
-//puts("r1");
+
     if(clms!=STRCountComma(str)+1)//if row and columns not matched size
     {
         return NULL;
@@ -75,22 +86,20 @@ CSV_ROW * GET_Row(const char * str, int ** pty,int ** size, int clms)
     {
         return NULL;
     }
-//puts("r2");
+
     //get the values from the string
     for(i=0;i<clms;i++)
     {
-//puts("r2.1");
         n=STRFirstComma(str+shift);
         strncpy(tmp,str+shift,n);
         tmp[n]='\0';//null terminate
         shift += (n+1);
-//puts("r2.2");
+
         //check type
         if(!DATA_CheckType(tmp,&row->cell[i],pty[0][i],&size[0][i]))
         {
             return NULL;
         }
-//puts("r2.3");
     }
     return row;
 }
