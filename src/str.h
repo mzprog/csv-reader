@@ -3,7 +3,7 @@
 
 #include "csvreader.h"
 
-char **GET_HeadName(int * clms,const char * str);
+char **GET_HeadName(int * clms,int ** hSize,const char * str);
 CSV_ROW * GET_Row(const char * str, int ** pty,int ** size, int clms);
 
 int STRCountComma(const char * str);
