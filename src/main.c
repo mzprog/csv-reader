@@ -93,56 +93,49 @@ EXPORT int CSV_Read(CSV_DATA *data)
     char tmp[2048];
     CSV_ROW *row,*lastRow;
     CSV_ROW baitRow;
+    int Row_Count=0;
 
     if(data==NULL)
     {
         return 0;
     }
+
     FILE * fptr = fopen (data->filepath, "r");
     if(fptr==NULL)
     {
         return 0;
     }
+
     if(fgets(tmp,2048,fptr)==NULL)
         return 0;
 
-    data->head=GET_HeadName(&data->columns,tmp);
+    //read the file head
+    data->head=GET_HeadName(&data->columns,&data->headSize,tmp);
     if(data->head==NULL)
     {
         return 0;
     }
-//puts("1");
-    //get the rows
-   // baitRow.next=&data->row;
-    lastRow=&baitRow;
-    //allocate the head size with 0's
-    if(data->headSize==NULL)
-    {
-        data->headSize=(int *) calloc(data->columns,sizeof(int));
-        if(data->head==NULL)
-        {
-            return 0;
-        }
-    }
 
+    //get the rows
+    lastRow=&baitRow;
 
     while(fgets(tmp,2048,fptr))
     {
-//puts("1.1");
         row=GET_Row(tmp,&data->pre_type,&data->headSize,data->columns);
-//puts("1.2");
         if(row)
         {
             lastRow->next=row;
             lastRow=row;
+            Row_Count++;
         }
         else
         {
             return 0;
         }
     }
-    data->row=baitRow.next;
 
+    data->row=baitRow.next;
+    data->rows=Row_Count;
     fclose(fptr);
     return 1;
 }
@@ -214,7 +207,51 @@ EXPORT int CSV_PrintHead(CSV_DATA *data)
         for(j=0;j<colC;j++)
         {
             DATA_PrintCell(&row->cell[j],data->headSize[j]);//print the value the get a new tab
-            //printf("\t\t");
+        }
+        puts("");
+        row=row->next;
+
+    }
+
+    return 1;
+}
+
+/*
+ * CSV_PrintTail()
+ * print the last 5 rows of the file
+ * data is the pointer of the used CSV Data Object
+ * Returns 1 if success
+ * Returns 0 if fail
+*/
+EXPORT int CSV_PrintTail(CSV_DATA *data)
+{
+    int i,j;
+    int skips=data->rows-5;//specify the number of rows that we will skip it
+    int colC=data->columns;
+    char tmp[256];//for sprintf
+    CSV_ROW *row;
+    if(data->columns<1)
+        return 0;
+
+    row=data->row;
+    for(i=0;i<skips;i++)
+    {
+        row=row->next;
+    }
+    //head names
+    for(i=0;i<data->columns;i++)
+    {
+        sprintf(tmp,"%%-%ds",data->headSize[i]);
+        printf(tmp,data->head[i]);
+    }
+    puts("");//new line
+    //first 5 rows
+
+    for(i=0;i<5 && row!=NULL;i++)
+    {
+        for(j=0;j<colC;j++)
+        {
+            DATA_PrintCell(&row->cell[j],data->headSize[j]);//print the value the get a new tab
         }
         puts("");
         row=row->next;
