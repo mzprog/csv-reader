@@ -18,10 +18,6 @@ EXPORT CSV_DATA * CSV_Init()
 {
     //allocate the variable
     CSV_DATA * dt= (CSV_DATA *)calloc(1,sizeof(CSV_DATA));
-    if(dt==NULL)
-    {
-        return NULL;
-    }
 
     return dt;
 }
@@ -259,4 +255,50 @@ EXPORT int CSV_PrintTail(CSV_DATA *data)
     }
 
     return 1;
+}
+
+/*
+ * CSV_PrintRange()
+ * print the rows of defined range of the file
+ * data is the pointer of the used CSV Data Object
+ * start is the fisrt row index
+ * end is the last row index or 0 for the end of the file
+ * Returns 1 if success
+ * Returns 0 if fail
+*/
+EXPORT int CSV_PrintTail(CSV_DATA *data,int start, int end)
+{
+  int i,j;
+  int skips=start;//specify the number of rows that we will skip it
+  int colC=data->columns;
+  char tmp[256];//for sprintf
+  CSV_ROW *row;
+  if(data->columns<1)
+      return 0;
+
+  row=data->row;
+  for(i=0;i<skips;i++)
+  {
+      row=row->next;
+  }
+  //head names
+  for(i=0;i<data->columns;i++)
+  {
+      sprintf(tmp,"%%-%ds",data->headSize[i]);
+      printf(tmp,data->head[i]);
+  }
+  puts("");//new line
+
+  for(i=start;i<end && row!=NULL;i++)
+  {
+      for(j=0;j<colC;j++)
+      {
+          DATA_PrintCell(&row->cell[j],data->headSize[j]);//print the value the get a new tab
+      }
+      puts("");
+      row=row->next;
+
+  }
+
+  return 1;
 }

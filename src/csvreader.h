@@ -122,4 +122,17 @@ EXPORT int CSV_PrintHead(CSV_DATA *data);
 */
 EXPORT int CSV_PrintTail(CSV_DATA *data);
 
+/*
+ * CSV_PrintRange()
+ * print the rows of defined range of the file
+ * data is the pointer of the used CSV Data Object
+ * start is the fisrt row index
+ * end is the last row index or 0 for the end of the file
+ * Returns 1 if success
+ * Returns 0 if fail
+*/
+EXPORT int CSV_PrintTail(CSV_DATA *data,int start, int end);
+
+
+
 #endif // _CSVREADER_H_
